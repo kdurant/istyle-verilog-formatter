@@ -36,17 +36,15 @@
 #include <sstream>
 #include <stdlib.h>
 
-
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
-#define IS_PARAM_OPTION(arg,op)    ((arg).length() < strlen(op) ? 0 : (arg).COMPARE(0, strlen(op), string(op))==0)
-#define IS_PARAM_OPTIONS(arg,a,b)  (IS_PARAM_OPTION((arg),(a)) || IS_PARAM_OPTION((arg),(b)))
+#define IS_PARAM_OPTION(arg, op) ((arg).length() < strlen(op) ? 0 : (arg).COMPARE(0, strlen(op), string(op)) == 0)
+#define IS_PARAM_OPTIONS(arg, a, b) (IS_PARAM_OPTION((arg), (a)) || IS_PARAM_OPTION((arg), (b)))
 
-#define GET_PARAM(arg,op)          ((arg).substr(strlen(op)))
-#define GET_PARAMS(arg,a,b)        (IS_PARAM_OPTION((arg),(a)) ? GET_PARAM((arg),(a)) : GET_PARAM((arg),(b)))
-
+#define GET_PARAM(arg, op) ((arg).substr(strlen(op)))
+#define GET_PARAMS(arg, a, b) (IS_PARAM_OPTION((arg), (a)) ? GET_PARAM((arg), (a)) : GET_PARAM((arg), (b)))
 
 #ifdef USES_NAMESPACE
 using namespace std;
@@ -54,236 +52,234 @@ using namespace astyle;
 #endif
 
 // default options:
-ostream *_err = &cerr;
-string _suffix = ".orig";
+ostream *_err    = &cerr;
+string   _suffix = ".orig";
 
-const string _version = "1.22";
-bool shouldBackupFile = true;
+const string _version         = "1.22";
+bool         shouldBackupFile = true;
 
 // --------------------------------------------------------------------------
 // Helper Functions
 // --------------------------------------------------------------------------
-void SetColor(unsigned short ForeColor=3,unsigned short BackGroundColor=0)
+void SetColor(unsigned short ForeColor = 3, unsigned short BackGroundColor = 0)
 {
-    #ifdef WIN32
-        HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
-        SetConsoleTextAttribute(hCon,ForeColor|(BackGroundColor*16));
-    #endif
+#ifdef WIN32
+    HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hCon, ForeColor | (BackGroundColor * 16));
+#endif
 }
-void error(const char *why, const char* what)
+void error(const char *why, const char *what)
 {
-    SetColor(12,0);
-    (*_err) << why << ' ' << what <<'\n';
-    SetColor(7,0);
+    SetColor(12, 0);
+    (*_err) << why << ' ' << what << '\n';
+    SetColor(7, 0);
     exit(1);
 }
 
-
-
 bool parseOption(ASFormatter &formatter, const string &arg, const string &errorInfo)
 {
-    if ( ( arg == "n" ) || ( arg == "suffix=none" ) )
+    if((arg == "n") || (arg == "suffix=none"))
     {
         shouldBackupFile = false;
     }
-    else if ( IS_PARAM_OPTION(arg, "suffix=") )
+    else if(IS_PARAM_OPTION(arg, "suffix="))
     {
         string suffixParam = GET_PARAM(arg, "suffix=");
-        if (suffixParam.length() > 0)
+        if(suffixParam.length() > 0)
             _suffix = suffixParam;
     }
-    else if ( arg == "style=ansi" )
+    else if(arg == "style=ansi")
     {
         formatter.setBracketIndent(false);
         formatter.setSpaceIndentation(4);
         formatter.setBracketFormatMode(BREAK_MODE);
         formatter.setSwitchIndent(false);
     }
-    else if ( arg == "style=gnu" )
+    else if(arg == "style=gnu")
     {
         formatter.setBlockIndent(true);
         formatter.setSpaceIndentation(2);
         formatter.setBracketFormatMode(BREAK_MODE);
         formatter.setSwitchIndent(false);
     }
-    else if ( arg == "style=kr" )
+    else if(arg == "style=kr")
     {
         formatter.setBracketIndent(false);
         formatter.setSpaceIndentation(4);
         formatter.setBracketFormatMode(ATTACH_MODE);
         formatter.setSwitchIndent(false);
     }
-    else if ( IS_PARAM_OPTIONS(arg, "t", "indent=tab=") )
+    else if(IS_PARAM_OPTIONS(arg, "t", "indent=tab="))
     {
-        int spaceNum = 4;
+        int    spaceNum      = 4;
         string spaceNumParam = GET_PARAMS(arg, "t", "indent=tab=");
-        if (spaceNumParam.length() > 0)
+        if(spaceNumParam.length() > 0)
         {
             spaceNum = atoi(spaceNumParam.c_str());
-            if(spaceNum==0)
+            if(spaceNum == 0)
             {
                 (*_err) << errorInfo << arg << endl;
-                return false; // unknown option
+                return false;  // unknown option
             }
         }
         formatter.setTabIndentation(spaceNum, false);
     }
-    else if ( IS_PARAM_OPTIONS(arg, "T", "force-indent=tab=") )
+    else if(IS_PARAM_OPTIONS(arg, "T", "force-indent=tab="))
     {
-        int spaceNum = 4;
+        int    spaceNum      = 4;
         string spaceNumParam = GET_PARAMS(arg, "T", "force-indent=tab=");
-        if (spaceNumParam.length() > 0)
+        if(spaceNumParam.length() > 0)
         {
             spaceNum = atoi(spaceNumParam.c_str());
-            if(spaceNum==0)
+            if(spaceNum == 0)
             {
                 (*_err) << errorInfo << arg << endl;
-                return false; // unknown option
+                return false;  // unknown option
             }
         }
         formatter.setTabIndentation(spaceNum, true);
     }
-    else if ( IS_PARAM_OPTION(arg, "indent=tab") )
+    else if(IS_PARAM_OPTION(arg, "indent=tab"))
     {
         formatter.setTabIndentation(4);
     }
-    else if ( IS_PARAM_OPTIONS(arg, "s", "indent=spaces=") )
+    else if(IS_PARAM_OPTIONS(arg, "s", "indent=spaces="))
     {
-        int spaceNum = 4;
+        int    spaceNum      = 4;
         string spaceNumParam = GET_PARAMS(arg, "s", "indent=spaces=");
-        if (spaceNumParam.length() > 0)
+        if(spaceNumParam.length() > 0)
         {
             spaceNum = atoi(spaceNumParam.c_str());
-            if(spaceNum==0)
+            if(spaceNum == 0)
             {
                 (*_err) << errorInfo << arg << endl;
-                return false; // unknown option
+                return false;  // unknown option
             }
         }
         formatter.setSpaceIndentation(spaceNum);
     }
-    else if ( IS_PARAM_OPTION(arg, "indent=spaces") )
+    else if(IS_PARAM_OPTION(arg, "indent=spaces"))
     {
         formatter.setSpaceIndentation(4);
     }
-    else if ( IS_PARAM_OPTIONS(arg, "M", "max-instatement-indent=") )
+    else if(IS_PARAM_OPTIONS(arg, "M", "max-instatement-indent="))
     {
-        int maxIndent = 40;
+        int    maxIndent      = 40;
         string maxIndentParam = GET_PARAMS(arg, "M", "max-instatement-indent=");
-        if (maxIndentParam.length() > 0)
+        if(maxIndentParam.length() > 0)
             maxIndent = atoi(maxIndentParam.c_str());
-        if(maxIndent==0)
+        if(maxIndent == 0)
         {
             (*_err) << errorInfo << arg << endl;
-            return false; // unknown option
+            return false;  // unknown option
         }
 
         formatter.setMaxInStatementIndentLength(maxIndent);
     }
-    else if ( IS_PARAM_OPTIONS(arg, "m", "min-conditional-indent=") )
+    else if(IS_PARAM_OPTIONS(arg, "m", "min-conditional-indent="))
     {
-        int minIndent = 0;
+        int    minIndent      = 0;
         string minIndentParam = GET_PARAMS(arg, "m", "min-conditional-indent=");
-        if (minIndentParam.length() > 0)
+        if(minIndentParam.length() > 0)
         {
             minIndent = atoi(minIndentParam.c_str());
-            if(minIndent==0)
+            if(minIndent == 0)
             {
                 (*_err) << errorInfo << arg << endl;
-                return false; // unknown option
+                return false;  // unknown option
             }
         }
         formatter.setMinConditionalIndentLength(minIndent);
     }
-    else if ( (arg == "B") || (arg == "indent-brackets") )
+    else if((arg == "B") || (arg == "indent-brackets"))
     {
         formatter.setBracketIndent(true);
     }
-    else if ( (arg == "G") || (arg == "indent-blocks") )
+    else if((arg == "G") || (arg == "indent-blocks"))
     {
         formatter.setBlockIndent(true);
     }
-    else if ( (arg == "b") || (arg == "brackets=break") )
+    else if((arg == "b") || (arg == "brackets=break"))
     {
         formatter.setBracketFormatMode(BREAK_MODE);
     }
-    else if ( (arg == "a") || (arg == "brackets=attach") )
+    else if((arg == "a") || (arg == "brackets=attach"))
     {
         formatter.setBracketFormatMode(ATTACH_MODE);
     }
-    else if ( (arg == "O") || (arg == "one-line=keep-blocks") )
+    else if((arg == "O") || (arg == "one-line=keep-blocks"))
     {
         formatter.setBreakOneLineBlocksMode(false);
     }
-    else if ( (arg == "o") || (arg == "one-line=keep-statements") )
+    else if((arg == "o") || (arg == "one-line=keep-statements"))
     {
         formatter.setSingleStatementsMode(false);
     }
-    else if ( arg == "pad=paren" )
+    else if(arg == "pad=paren")
     {
         formatter.setParenthesisPaddingMode(true);
     }
-    else if ((arg == "l") || ( arg == "pad=block" ))
+    else if((arg == "l") || (arg == "pad=block"))
     {
         formatter.setBlockPaddingMode(true);
     }
-    else if ( (arg == "P") || (arg == "pad=all") )
+    else if((arg == "P") || (arg == "pad=all"))
     {
         formatter.setOperatorPaddingMode(true);
         formatter.setParenthesisPaddingMode(true);
         formatter.setBlockPaddingMode(true);
     }
-    else if ( (arg == "p") || (arg == "pad=oper") )
+    else if((arg == "p") || (arg == "pad=oper"))
     {
         formatter.setOperatorPaddingMode(true);
     }
-    else if ( (arg == "E") || (arg == "fill-empty-lines") )
+    else if((arg == "E") || (arg == "fill-empty-lines"))
     {
         formatter.setEmptyLineFill(true);
     }
-    else if (arg == "indent-preprocessor")
+    else if(arg == "indent-preprocessor")
     {
         formatter.setPreprocessorIndent(true);
     }
-    else if (arg == "convert-tabs")
+    else if(arg == "convert-tabs")
     {
         formatter.setTabSpaceConversionMode(true);
     }
-    else if (arg == "break-blocks=all")
+    else if(arg == "break-blocks=all")
     {
         formatter.setBreakBlocksMode(true);
         formatter.setBreakClosingHeaderBlocksMode(true);
     }
-    else if (arg == "break-blocks")
+    else if(arg == "break-blocks")
     {
         formatter.setBreakBlocksMode(true);
     }
-    else if (arg == "break-elseifs")
+    else if(arg == "break-elseifs")
     {
         formatter.setBreakElseIfsMode(true);
     }
-    else if ( (arg == "X") || (arg == "errors-to-standard-output") )
+    else if((arg == "X") || (arg == "errors-to-standard-output"))
     {
         _err = &cout;
     }
-    else if ( (arg == "v") || (arg == "version") )
+    else if((arg == "v") || (arg == "version"))
     {
         (*_err) << "iStyle " << _version << endl;
     }
     else
     {
         (*_err) << errorInfo << arg << endl;
-        return false; // unknown option
+        return false;  // unknown option
     }
-    return true; //o.k.
+    return true;  //o.k.
 }
 
 void importOptions(istream &in, vector<string> &optionsVector)
 {
-    char ch;
+    char   ch;
     string currentToken;
 
-    while (in.peek() != istream::traits_type::eof())
+    while(in.peek() != istream::traits_type::eof())
     {
         currentToken = "";
         do
@@ -291,54 +287,53 @@ void importOptions(istream &in, vector<string> &optionsVector)
             in.get(ch);
 
             // treat '#' as line comments
-            if (ch == '#')
+            if(ch == '#')
             {
-                while (in.peek() != istream::traits_type::eof())
+                while(in.peek() != istream::traits_type::eof())
                 {
                     in.get(ch);
-                    if (ch == '\n')
+                    if(ch == '\n')
                         break;
                 }
                 continue;
             }
 
             // break options on spaces, tabs or new-lines
-            if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+            if(ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
                 break;
             else
                 currentToken.append(1, ch);
 
-        }
-        while (in.peek() != istream::traits_type::eof());
+        } while(in.peek() != istream::traits_type::eof());
 
-        if (currentToken.length() != 0)
+        if(currentToken.length() != 0)
             optionsVector.push_back(currentToken);
     }
 }
 
-template<class ITER>
-bool parseOptions(ASFormatter &formatter,
-                  const ITER &optionsBegin,
-                  const ITER &optionsEnd,
+template <class ITER>
+bool parseOptions(ASFormatter & formatter,
+                  const ITER &  optionsBegin,
+                  const ITER &  optionsEnd,
                   const string &errorInfo)
 {
-    ITER option;
-    bool ok = true;
+    ITER   option;
+    bool   ok = true;
     string arg, subArg;
 
-    for (option = optionsBegin; option != optionsEnd; ++option)
+    for(option = optionsBegin; option != optionsEnd; ++option)
     {
-        arg = *option; //string(*option);
+        arg = *option;  //string(*option);
 
-        if (arg.COMPARE(0, 2, string("--")) == 0)
+        if(arg.COMPARE(0, 2, string("--")) == 0)
             ok &= parseOption(formatter, arg.substr(2), errorInfo);
-        else if (arg[0] == '-')
+        else if(arg[0] == '-')
         {
             int i;
 
-            for (i=1; i < arg.length(); ++i)
+            for(i = 1; i < arg.length(); ++i)
             {
-                if (isalpha(arg[i]) && i > 1)
+                if(isalpha(arg[i]) && i > 1)
                 {
                     ok &= parseOption(formatter, subArg, errorInfo);
                     subArg = "";
@@ -362,22 +357,22 @@ void printTitle()
 {
     cout << endl;
 
-    SetColor(10,0);
+    SetColor(10, 0);
     cout << "iStyle " << _version << endl;
 
-    SetColor(2,0);
+    SetColor(2, 0);
     cout << "  Fast and Free Automatic Formatter for Verilog Source Code\n";
     cout << "    Created by haimag\n";
     cout << "    Thanks to Tal Davidson & Astyle\n";
     cout << "    Report bugs https://github.com/thomasrussellmurphy/istyle-verilog-formatter/issues\n";
     cout << endl;
-    SetColor(7,0);
+    SetColor(7, 0);
 }
 
 void printHelpBase()
 {
     printTitle();
-    SetColor(14,0);
+    SetColor(14, 0);
 
     cout << endl;
     cout << "Usage:\n";
@@ -387,12 +382,12 @@ void printHelpBase()
     cout << endl;
 }
 
-void printHelpSimple(int isGetchar=0)
+void printHelpSimple(int isGetchar = 0)
 {
     printHelpBase();
 
-    SetColor(7,0);
-    cout << "For help on options, type 'iStyle -h'" ;
+    SetColor(7, 0);
+    cout << "For help on options, type 'iStyle -h'";
 
     if(isGetchar == 1)
     {
@@ -401,7 +396,7 @@ void printHelpSimple(int isGetchar=0)
     }
     else
     {
-        cout<<"."<<endl;
+        cout << "." << endl;
     }
     //~ cout << endl;
 }
@@ -410,26 +405,26 @@ void printHelpFull()
 {
     printHelpBase();
 
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "When indenting a specific file, the resulting indented file RETAINS the\n";
     cout << "original file-name. The original pre-indented file is renamed, with a\n";
     cout << "suffix of \".orig\" added to the original filename. \n";
     cout << endl;
-    cout << "By default, iStyle is set up to indent Verilog files, with 4 spaces per \n" ;
+    cout << "By default, iStyle is set up to indent Verilog files, with 4 spaces per \n";
     cout << "indent, a maximal indentation of 40 spaces inside continuous statements,\n";
     cout << "and NO formatting.\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Option's Format:\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "----------------\n";
     cout << "    Long options (starting with '--') must be written one at a time.\n";
     cout << "    Short options (starting with '-') may be appended together.\n";
     cout << "    Thus, -bps4 is the same as -b -p -s4.\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Predefined Styling options:\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "---------------------------\n";
     cout << "    --style=ansi\n";
     cout << "    ANSI style formatting/indenting.\n";
@@ -440,23 +435,23 @@ void printHelpFull()
     cout << "    --style=gnu\n";
     cout << "    GNU style formatting/indenting.\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Indentation options:\n";
     cout << "--------------------\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "    -s   OR   -s#   OR   --indent=spaces=#\n";
-    cout << "    Indent using # spaces per indent. Not specifying #\n" ;
-    cout << "    will result in a default of 4 spaces per indent.\n" ;
+    cout << "    Indent using # spaces per indent. Not specifying #\n";
+    cout << "    will result in a default of 4 spaces per indent.\n";
     cout << endl;
     cout << "    -t   OR   -t#   OR   --indent=tab=#\n";
     cout << "    Indent using tab characters, assuming that each\n";
     cout << "    tab is # spaces long. Not specifying # will result\n";
-    cout << "    in a default assumption of 4 spaces per tab.\n" ;
+    cout << "    in a default assumption of 4 spaces per tab.\n";
     cout << endl;
     cout << "    -T#   OR   --force-indent=tab=#\n";
     cout << "    Indent using tab characters, assuming that each\n";
     cout << "    tab is # spaces long. Force tabs to be used in areas\n";
-    cout << "    iStyle would prefer to use spaces.\n" ;
+    cout << "    iStyle would prefer to use spaces.\n";
     cout << endl;
     cout << "    -B   OR   --indent-brackets\n";
     cout << "    Add extra indentation to 'begin' and 'end' block brackets.\n";
@@ -479,9 +474,9 @@ void printHelpFull()
     cout << "    --indent-preprocessor\n";
     cout << "    Indent multi-line #define statements\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Formatting options:\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "-------------------\n";
     cout << "    -b  OR  --brackets=break\n";
     cout << "    Break brackets from pre-block code (i.e. ANSI C/C++ style).\n";
@@ -520,9 +515,9 @@ void printHelpFull()
     cout << "    --break-elseifs\n";
     cout << "    Break 'else if()' statements into two different lines.\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Other options:\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "-------------\n";
     cout << "    --suffix=####\n";
     cout << "    Append the suffix #### instead of '.orig' to original filename.\n";
@@ -545,9 +540,9 @@ void printHelpFull()
     cout << "    Parse used the specified options file: ####, options=none, none\n";
     cout << "    parse options file, and not looks for parse options files\n";
     cout << endl;
-    SetColor(14,0);
+    SetColor(14, 0);
     cout << "Default options file:\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << "---------------------\n";
     cout << "    iStyle looks for a default options file in the following order:\n";
     cout << "    1. The contents of the ISTYLE_OPTIONS environment\n";
@@ -560,21 +555,21 @@ void printHelpFull()
     cout << "    will be parsed BEFORE the command-line options.\n";
     cout << "    Options within the default option file may be written without\n";
     cout << "    the preliminary '-' or '--'.\n";
-    SetColor(7,0);
+    SetColor(7, 0);
     cout << endl;
 }
 
-bool isWriteable( char const * const filename )
+bool isWriteable(char const *const filename)
 {
     std::ifstream in(filename);
-    if (!in)
+    if(!in)
     {
         //(*_err) << "File '" << filename << "' does not exist." << endl;
         return false;
     }
     in.close();
     std::ofstream out(filename, std::ios_base::app);
-    if (!out)
+    if(!out)
     {
         //(*_err) << "File '" << filename << "' is not writeable." << endl;
         return false;
@@ -583,85 +578,86 @@ bool isWriteable( char const * const filename )
     return true;
 }
 
-void formatUsingStreams(ASFormatter &formatter, istream *in, ostream *out) {
+void formatUsingStreams(ASFormatter &formatter, istream *in, ostream *out)
+{
     formatter.init(new ASStreamIterator(in));
-    while (formatter.hasMoreLines())
+    while(formatter.hasMoreLines())
     {
         *out << formatter.nextLine();
-        if (formatter.hasMoreLines())
+        if(formatter.hasMoreLines())
             *out << endl;
     }
 }
 
 int main(int argc, char *argv[])
 {
-    ASFormatter formatter;
+    ASFormatter    formatter;
     vector<string> fileNameVector;
     vector<string> optionsVector;
-    string optionsFileName = "";
-    string arg;
-    bool ok = true;
-    bool shouldPrintHelp = false;
-    bool shouldParseOptionsFile = true;
+    string         optionsFileName = "";
+    string         arg;
+    bool           ok                     = true;
+    bool           shouldPrintHelp        = false;
+    bool           shouldParseOptionsFile = true;
 
-    _err = &cerr;
+    _err    = &cerr;
     _suffix = ".orig";
 
     // manage flags
-    for (int i=1; i<argc; i++)
+    for(int i = 1; i < argc; i++)
     {
         arg = string(argv[i]);
 
-        if ( IS_PARAM_OPTION(arg ,"--options=none") )
+        if(IS_PARAM_OPTION(arg, "--options=none"))
         {
             shouldParseOptionsFile = false;
         }
-        else if ( IS_PARAM_OPTION(arg ,"--options=") )
+        else if(IS_PARAM_OPTION(arg, "--options="))
         {
             optionsFileName = GET_PARAM(arg, "--options=");
         }
-        else if ( (arg == "-h") || (arg == "--help") || (arg == "-?") )
+        else if((arg == "-h") || (arg == "--help") || (arg == "-?"))
         {
             shouldPrintHelp = true;
         }
-        else if (arg[0] == '-')
+        else if(arg[0] == '-')
         {
             optionsVector.push_back(arg);
         }
-        else // file-name
+        else  // file-name
         {
             fileNameVector.push_back(arg);
         }
     }
 
     // parse options file
-    if (shouldParseOptionsFile)
+    if(shouldParseOptionsFile)
     {
-        if (optionsFileName.compare("") == 0)
+        if(optionsFileName.compare("") == 0)
         {
-            char* env = getenv("ISTYLE_OPTIONS");
-            if (env != NULL)
+            char *env = getenv("ISTYLE_OPTIONS");
+            if(env != NULL)
                 optionsFileName = string(env);
         }
-        if (optionsFileName.compare("") == 0)
+        if(optionsFileName.compare("") == 0)
         {
-            char* env = getenv("HOME");
-            if (env != NULL)
+            char *env = getenv("HOME");
+            if(env != NULL)
                 optionsFileName = string(env) + string("/.iStylerc");
         }
-        if (optionsFileName.compare("") == 0)
+        if(optionsFileName.compare("") == 0)
         {
-            char* drive = getenv("HOMEDRIVE");
-            char* path = getenv("HOMEPATH");
-            if (path != NULL)
+            char *drive = getenv("HOMEDRIVE");
+            char *path  = getenv("HOMEPATH");
+            if(path != NULL)
                 optionsFileName = string(drive) + string(path) + string("/.iStylerc");
         }
 
-        if (!optionsFileName.empty())
+        if(!optionsFileName.empty())
         {
             ifstream optionsIn(optionsFileName.c_str());
 
-            if (optionsIn)
+            if(optionsIn)
             {
                 vector<string> fileOptionsVector;
                 // reading (whitespace seperated) strings from file into string vector
@@ -670,12 +666,11 @@ int main(int argc, char *argv[])
                                   fileOptionsVector.begin(),
                                   fileOptionsVector.end(),
                                   string("Unknown option in default options file: "));
-
             }
 
             optionsIn.close();
 
-            if (!ok)
+            if(!ok)
             {
                 printHelpSimple();
                 exit(1);
@@ -689,21 +684,20 @@ int main(int argc, char *argv[])
                       optionsVector.begin(),
                       optionsVector.end(),
                       string("Unknown command line option: "));
-    if (!ok)
+    if(!ok)
     {
         printHelpSimple();
         exit(1);
     }
 
-    if (shouldPrintHelp)
+    if(shouldPrintHelp)
     {
         printHelpFull();
         exit(1);
-
     }
 
     // if no files have been given, use cin for input and cout for output
-    if (fileNameVector.empty() )
+    if(fileNameVector.empty())
     {
         formatUsingStreams(formatter, &cin, &cout);
     }
@@ -713,36 +707,36 @@ int main(int argc, char *argv[])
         printTitle();
 
         // indent the given files
-        for (int i=0; i<fileNameVector.size(); i++)
+        for(int i = 0; i < fileNameVector.size(); i++)
         {
             string originalFileName = fileNameVector[i];
-            string inFileName = originalFileName + _suffix;
+            string inFileName       = originalFileName + _suffix;
 
-            if ( ! isWriteable(originalFileName.c_str()) )
+            if(!isWriteable(originalFileName.c_str()))
             {
-                error(string("Error: File '" + originalFileName ).c_str() ,
+                error(string("Error: File '" + originalFileName).c_str(),
                       "' does not exist, or is read-only.");
                 continue;
             }
 
             remove(inFileName.c_str());
 
-            if ( rename(originalFileName.c_str(), inFileName.c_str()) < 0)
+            if(rename(originalFileName.c_str(), inFileName.c_str()) < 0)
             {
-                error(string("Error: Could not rename " + originalFileName).c_str() ,
+                error(string("Error: Could not rename " + originalFileName).c_str(),
                       string(" to " + inFileName).c_str());
                 exit(1);
             }
 
             ifstream in(inFileName.c_str());
-            if (!in)
+            if(!in)
             {
                 error("Could not open input file", inFileName.c_str());
                 exit(1);
             }
 
             ofstream out(originalFileName.c_str());
-            if (!out)
+            if(!out)
             {
                 error("Could not open output file", originalFileName.c_str());
                 exit(1);
@@ -754,17 +748,17 @@ int main(int argc, char *argv[])
             out.close();
             in.close();
 
-            if ( ! shouldBackupFile )
+            if(!shouldBackupFile)
             {
-                remove( inFileName.c_str() );
+                remove(inFileName.c_str());
             }
 
             // print
-            SetColor(3,0);
-            cout <<"Indented file -- " <<originalFileName << "."<< endl;
-            SetColor(7,0);
+            SetColor(3, 0);
+            cout << "Indented file -- " << originalFileName << "." << endl;
+            SetColor(7, 0);
         }
     }
-    SetColor(7,0);
+    SetColor(7, 0);
     return 0;
 }

@@ -34,14 +34,14 @@
 // macro fixes this.
 #if defined(__GNUC__) && (__GNUC__ < 3)
 // gcc 2.x
-#define COMPARE(place, length, str)       compare((str), (place), (length))
+#define COMPARE(place, length, str) compare((str), (place), (length))
 #else
 // all others
-#define COMPARE(place, length, str)       compare((place), (length), (str))
+#define COMPARE(place, length, str) compare((place), (length), (str))
 #endif
 
 // Get rid of annoying MSVC warnings on debug builds about lengths of
 // identifiers in template instantiations. (Contributed by John A. McNamara)
 #ifdef _MSC_VER
-#pragma warning( disable:4786 )
+#pragma warning(disable : 4786)
 #endif

@@ -32,7 +32,6 @@
 #include <istream>
 //~ #include <strstream>
 
-
 #include <sstream>
 
 #ifdef USES_NAMESPACE
@@ -48,7 +47,7 @@ namespace astyle
 
 ASStreamIterator::ASStreamIterator(istream *in)
 {
-    inStream = in;
+    inStream  = in;
     linecount = 0;
 }
 
@@ -57,27 +56,25 @@ ASStreamIterator::~ASStreamIterator()
     delete inStream;
 }
 
-
 bool ASStreamIterator::hasMoreLines() const
 {
-    if (*inStream)
+    if(*inStream)
         return true;
     else
         return false;
 }
 
-
 string ASStreamIterator::nextLine()
 {
     string buffer;
     getline(*inStream, buffer);
-    if (inStream->fail() && !inStream->eof())
+    if(inStream->fail() && !inStream->eof())
     {
         string str;
-        str = "Could not read line " ;
+        str = "Could not read line ";
         error(str.c_str(), "(too long?)");
     }
-    if (buffer[buffer.size() - 1] == '\r')
+    if(buffer[buffer.size() - 1] == '\r')
     {
         buffer.erase(buffer.size() - 1);
     }
