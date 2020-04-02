@@ -182,7 +182,7 @@ private:
     vector<vector<const string *> *> *tempStacks;
     vector<int> *                     blockParenDepthStack;
 
-    vector<int> *inStatementIndentStack;
+    vector<int> *inStatementIndentStack;  // 处理层次缩进
     vector<int> *inStatementIndentStackSizeStack;
     vector<int> *parenIndentStack;
 

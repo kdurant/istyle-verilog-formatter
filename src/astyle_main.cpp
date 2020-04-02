@@ -583,7 +583,13 @@ void formatUsingStreams(ASFormatter &formatter, istream *in, ostream *out)
     formatter.init(new ASStreamIterator(in));
     while(formatter.hasMoreLines())
     {
+#ifdef DEBUG
+        string s = formatter.nextLine();
+        *out << s;
+        cout << "wangjun: " << s << endl;
+#else
         *out << formatter.nextLine();
+#endif
         if(formatter.hasMoreLines())
             *out << endl;
     }

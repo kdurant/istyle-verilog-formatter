@@ -5,6 +5,7 @@ CONFIG -= qt
 
 INCLUDEPATH += ../../src/
 
+DEFINES += DEBUG
 
 SOURCES += \
     ../../src/astyle_main.cpp \

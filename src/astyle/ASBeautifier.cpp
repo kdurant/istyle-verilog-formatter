@@ -561,6 +561,7 @@ string ASBeautifier::beautify(const string &originalLine)
     bool isPreprocesor = false;
     if(line[0] == PREPROCESSOR_CHAR)
         isPreprocesor = (findHeader(line, 0, preprocessorHeaders) != NULL);
+    // 本行不是注释，且开头不是预处理字符`或者\字符
     if(!isInComment && (isPreprocesor || backslashEndsPrevLine))
     {
         if(line[0] == PREPROCESSOR_CHAR)
@@ -682,6 +683,11 @@ string ASBeautifier::beautify(const string &originalLine)
     }
 
     // calculate preliminary indentation based on data from past lines
+#ifdef DEBUG
+    cout << inStatementIndentStack->size() << endl;
+    if(inStatementIndentStack->size() != 0)
+        cout << inStatementIndentStack->back() << endl;
+#endif
     if(!inStatementIndentStack->empty())
         spaceTabCount = inStatementIndentStack->back();
 
@@ -1358,6 +1364,7 @@ int ASBeautifier::indexOf(vector<const string *> &container, const string *eleme
 
 /**
 * trim removes the white space surrounding a line.
+* 去除字符串前、后的空白字符
 *
 * @return          the trimmed line.
 * @param str       the line to trim.
