@@ -30,16 +30,6 @@
 // comment out the line below if your compiler does NOT understand NAMESPACES
 #define USES_NAMESPACE
 
-// gcc 2.x has a non-standard implementation of string.compare; the COMPARE()
-// macro fixes this.
-#if defined(__GNUC__) && (__GNUC__ < 3)
-// gcc 2.x
-#define COMPARE(place, length, str) compare((str), (place), (length))
-#else
-// all others
-#define COMPARE(place, length, str) compare((place), (length), (str))
-#endif
-
 // Get rid of annoying MSVC warnings on debug builds about lengths of
 // identifiers in template instantiations. (Contributed by John A. McNamara)
 #ifdef _MSC_VER

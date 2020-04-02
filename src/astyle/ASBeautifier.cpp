@@ -575,7 +575,7 @@ string ASBeautifier::beautify(const string &originalLine)
             //    to be called for the actual indentation.
             // The original beautifier will have isInDefineDefinition = true, isInDefine = false
             // The cloned beautifier will have   isInDefineDefinition = true, isInDefine = true
-            if(preprocessorIndent && preproc.COMPARE(0, 6, string("define")) == 0 && line[line.length() - 1] == '\\')
+            if(preprocessorIndent && preproc.compare(0, 6, string("define")) == 0 && line[line.length() - 1] == '\\')
             {
                 if(!isInDefineDefinition)
                 {
@@ -598,14 +598,14 @@ string ASBeautifier::beautify(const string &originalLine)
                     isInDefine = true;
                 }
             }
-            else if(preproc.COMPARE(0, 2, string("if")) == 0)
+            else if(preproc.compare(0, 2, string("if")) == 0)
             {
                 // push a new beautifier into the stack
                 waitingBeautifierStackLengthStack->push_back(waitingBeautifierStack->size());
                 activeBeautifierStackLengthStack->push_back(activeBeautifierStack->size());
                 waitingBeautifierStack->push_back(new ASBeautifier(*this));
             }
-            else if(preproc.COMPARE(0, 4 /*2*/, string("else")) == 0)
+            else if(preproc.compare(0, 4 /*2*/, string("else")) == 0)
             {
                 if(!waitingBeautifierStack->empty())
                 {
@@ -615,7 +615,7 @@ string ASBeautifier::beautify(const string &originalLine)
                 }
             }
 
-            else if(preproc.COMPARE(0, 5, string("endif")) == 0)
+            else if(preproc.compare(0, 5, string("endif")) == 0)
             {
                 int           stackLength;
                 ASBeautifier *beautifier;
@@ -723,7 +723,7 @@ string ASBeautifier::beautify(const string &originalLine)
             isSpecialChar = false;
             continue;
         }
-        if(!(isInComment || isInLineComment) && line.COMPARE(i, 2, string("\\\\")) == 0)
+        if(!(isInComment || isInLineComment) && line.compare(i, 2, string("\\\\")) == 0)
         {
             outBuffer.append(1, '\\');
             i++;
@@ -754,21 +754,21 @@ string ASBeautifier::beautify(const string &originalLine)
 
         // handle comments
 
-        if(!(isInComment || isInLineComment) && line.COMPARE(i, 2, AS_OPEN_LINE_COMMENT) == 0)
+        if(!(isInComment || isInLineComment) && line.compare(i, 2, AS_OPEN_LINE_COMMENT) == 0)
         {
             isInLineComment = true;
             outBuffer.append(1, '/');
             i++;
             continue;
         }
-        else if(!(isInComment || isInLineComment) && line.COMPARE(i, 2, AS_OPEN_COMMENT) == 0)
+        else if(!(isInComment || isInLineComment) && line.compare(i, 2, AS_OPEN_COMMENT) == 0)
         {
             isInComment = true;
             outBuffer.append(1, '*');
             i++;
             continue;
         }
-        else if((isInComment || isInLineComment) && line.COMPARE(i, 2, AS_CLOSE_COMMENT) == 0)
+        else if((isInComment || isInLineComment) && line.compare(i, 2, AS_CLOSE_COMMENT) == 0)
         {
             isInComment = false;
             outBuffer.append(1, '/');
@@ -1100,7 +1100,7 @@ string ASBeautifier::beautify(const string &originalLine)
         if(outBuffer[0] == PREPROCESSOR_CHAR)
         {
             string preproc = trim(string(outBuffer.c_str() + 1));
-            if(preproc.COMPARE(0, 6, string("define")) == 0)
+            if(preproc.compare(0, 6, string("define")) == 0)
             {
                 if(!inStatementIndentStack->empty() && inStatementIndentStack->back() > 0)
                 {
@@ -1211,7 +1211,7 @@ int ASBeautifier::getNextProgramCharDistance(const string &line, int i)
         ch = line[i + charDistance];
         if(inComment)
         {
-            if(line.COMPARE(i + charDistance, 2, AS_CLOSE_COMMENT) == 0)
+            if(line.compare(i + charDistance, 2, AS_CLOSE_COMMENT) == 0)
             {
                 charDistance++;
                 inComment = false;
@@ -1222,9 +1222,9 @@ int ASBeautifier::getNextProgramCharDistance(const string &line, int i)
             continue;
         else if(ch == '/')
         {
-            if(line.COMPARE(i + charDistance, 2, AS_OPEN_LINE_COMMENT) == 0)
+            if(line.compare(i + charDistance, 2, AS_OPEN_LINE_COMMENT) == 0)
                 return remainingCharNum;
-            else if(line.COMPARE(i + charDistance, 2, AS_OPEN_COMMENT) == 0)
+            else if(line.compare(i + charDistance, 2, AS_OPEN_COMMENT) == 0)
             {
                 charDistance++;
                 inComment = true;
@@ -1291,7 +1291,7 @@ const string *ASBeautifier::findHeader(const string &line, int i, const vector<c
     {
         header = possibleHeaders[p];
 
-        if(line.COMPARE(i, header->length(), *header) == 0)
+        if(line.compare(i, header->length(), *header) == 0)
         {
             // check that this is a header and not a part of a longer word
             // (e.g. not at its begining, not at its middle...)

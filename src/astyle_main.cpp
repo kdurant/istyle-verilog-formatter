@@ -40,7 +40,7 @@
 #include <Windows.h>
 #endif
 
-#define IS_PARAM_OPTION(arg, op) ((arg).length() < strlen(op) ? 0 : (arg).COMPARE(0, strlen(op), string(op)) == 0)
+#define IS_PARAM_OPTION(arg, op) ((arg).length() < strlen(op) ? 0 : (arg).compare(0, strlen(op), string(op)) == 0)
 #define IS_PARAM_OPTIONS(arg, a, b) (IS_PARAM_OPTION((arg), (a)) || IS_PARAM_OPTION((arg), (b)))
 
 #define GET_PARAM(arg, op) ((arg).substr(strlen(op)))
@@ -325,7 +325,7 @@ bool parseOptions(ASFormatter & formatter,
     {
         arg = *option;  //string(*option);
 
-        if(arg.COMPARE(0, 2, string("--")) == 0)
+        if(arg.compare(0, 2, string("--")) == 0)
             ok &= parseOption(formatter, arg.substr(2), errorInfo);
         else if(arg[0] == '-')
         {

@@ -973,7 +973,7 @@ void ASFormatter::setBreakClosingHeaderBlocksMode(bool state)
  */
 bool ASFormatter::isSequenceReached(const string &sequence) const
 {
-    return currentLine.COMPARE(charNum, sequence.length(), sequence) == 0;
+    return currentLine.compare(charNum, sequence.length(), sequence) == 0;
 }
 
 /**
@@ -1029,7 +1029,7 @@ bool ASFormatter::isBeforeComment() const
         ;
 
     if(peekNum < len)
-        foundComment = (currentLine.COMPARE(peekNum, 2, AS_OPEN_COMMENT) == 0 || currentLine.COMPARE(peekNum, 2, AS_OPEN_LINE_COMMENT) == 0);
+        foundComment = (currentLine.compare(peekNum, 2, AS_OPEN_COMMENT) == 0 || currentLine.compare(peekNum, 2, AS_OPEN_LINE_COMMENT) == 0);
 
     return foundComment;
 }
@@ -1325,7 +1325,7 @@ bool ASFormatter::isOneLineBlockReached() const
 
         if(isInComment)
         {
-            if(currentLine.COMPARE(i, 2, "*/") == 0)
+            if(currentLine.compare(i, 2, "*/") == 0)
             {
                 isInComment = false;
                 ++i;
@@ -1353,10 +1353,10 @@ bool ASFormatter::isOneLineBlockReached() const
             continue;
         }
 
-        if(currentLine.COMPARE(i, 2, "//") == 0)
+        if(currentLine.compare(i, 2, "//") == 0)
             break;
 
-        if(currentLine.COMPARE(i, 2, "/*") == 0)
+        if(currentLine.compare(i, 2, "/*") == 0)
         {
             isInComment = true;
             ++i;
